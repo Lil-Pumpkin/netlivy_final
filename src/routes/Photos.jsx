@@ -8,20 +8,66 @@ const Photos = () => {
   const [submited, setSubmited] = useState("");
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error] = useState(null);
 
-  const deletePhoto = (id) => {
+  const deletePhoto = async (id) => {
     // TODO: answer here
+    
+    await fetch(`https://gallery-app-server.vercel.app/photos/${id}`, {
+      method: "DELETE",
+    })
+
+      .then(() => {
+        setPhotos(photos.filter(photo => photo.id !== id))
+      })
+
   };
 
   useEffect(() => {
     setLoading(true);
     // TODO: answer here
+
+    if (sort) {
+      fetch(`https://gallery-app-server.vercel.app/photos?_sort=id&_order=${sort}`)
+        .then((response) => {
+          return response.json();
+        })
+
+        .then((data) => {
+          setPhotos(data);
+          setLoading(false);
+        });
+    }
+
+    if (submited) {
+      fetch(`https://gallery-app-server.vercel.app/photos?q=${submited}`)
+        .then((response) => {
+          response.json();
+        })
+
+        .then((data) => {
+          setPhotos(data);
+          setLoading(false);
+        });
+
+    }
+
   }, [sort, submited]);
 
   useEffect(() => {
     setLoading(true);
     // TODO: answer here
+
+    fetch("https://gallery-app-server.vercel.app/photos")
+      .then((response) => {
+        return response.json();
+      })
+
+      .then((data) => {
+        setPhotos(data);
+        setLoading(false);
+      });
+      
   }, []);
 
   if (error) return <h1 style={{ width: "100%", textAlign: "center", marginTop: "20px" }} >Error!</h1>;

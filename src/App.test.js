@@ -1,11 +1,9 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, waitFor, screen } from '@testing-library/react';
 import App from './App';
 import { MemoryRouter } from 'react-router-dom';
 import cheerio from 'cheerio';
 import { url, studentName, studentId } from './Task';
-
-jest.setTimeout(60000);
 
 describe('test deployment', () => {
   it('should have student name on local', async () => {
@@ -15,10 +13,11 @@ describe('test deployment', () => {
       </MemoryRouter>
     );
 
-    const studentNamePatern = new RegExp(studentName, 'i');
-    const studentNameComponent = screen.getByText(studentNamePatern);
+    await waitFor(() => {
+      const studentNameComponent = screen.getByText(studentName);
 
-    expect(studentNameComponent?.textContent).toBe(studentName);
+      expect(studentNameComponent.textContent).toBe(studentName);
+    });
   });
 
   it('should have student id on local', async () => {
@@ -28,13 +27,16 @@ describe('test deployment', () => {
       </MemoryRouter>
     );
 
-    const studentIdComponent = screen.getByText(studentId);
-    expect(studentIdComponent?.textContent).toBe(studentId);
+    await waitFor(() => {
+      const studentIdComponent = screen.getByText(studentId);
+
+      expect(studentIdComponent.textContent).toBe(studentId);
+    });
   });
 
-  it('Application should be deploy on Firebase', () => {
+  it('Application should be deploy on Netlify', () => {
     expect(url).not.toBe('');
-    expect(/\.web\.app\/?$/i.test(url)).toBe(true);
+    expect(/\.netlify\.app\/?$/i.test(url)).toBe(true);
   });
 
   it('should have same student name and student id on deploy site', async () => {

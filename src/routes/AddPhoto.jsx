@@ -8,9 +8,27 @@ const AddPhoto = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const addPhoto = (e) => {
+  const addPhoto = async (e) => {
     e.preventDefault();
     // TODO: answer here
+     if (secret !== "password"){
+      setError("You are not authorized");
+     } else if (secret === "password"){
+      await fetch("https://gallery-app-server.vercel.app/photos/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body : JSON.stringify({
+          imageUrl : imageUrl,
+          captions : captions,
+          createdAt : Date().toString(),
+          updateAt : Date().toString(),
+          secret : "password",
+        }),
+      });
+      navigate("/photos");
+    }
   };
 
   return (

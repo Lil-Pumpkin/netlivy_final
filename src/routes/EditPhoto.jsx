@@ -6,24 +6,43 @@ const EditPhoto = () => {
   const [imageUrl, setImageUrl] = useState("");
   const [captions, setCaptions] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error] = useState(null);
   const navigate = useNavigate();
   const { id } = useParams();
 
-  const editPhoto = (e) => {
+  const editPhoto = async (e) => {
     e.preventDefault();
     // TODO: answer here
+    await fetch(`https://gallery-app-server.vercel.app/photos/${id}`, {
+      method: "PATCH",
+      headers: { 
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        imageUrl: imageUrl,
+        captions: captions,
+        updateAt: Date().toString(),
+      }),
+    });
+    navigate("/photos");
   };
 
   useEffect(() => {
     setLoading(true);
     // TODO: answer here
+    fetch(`https://gallery-app-server.vercel.app/photos/${id}`)
+      .then((response) => response.json())
+      .then((json) => {
+        setCaptions(json.captions)
+        setImageUrl(json.imageUrl)
+      })
+      setLoading(false)
   }, [id]);
 
   if (error) return <div>Error!</div>;
 
   return (
-    <>
+    <> 
       {loading ? (
         <h1 style={{ width: "100%", textAlign: "center", marginTop: "20px" }}>
           Loading...
